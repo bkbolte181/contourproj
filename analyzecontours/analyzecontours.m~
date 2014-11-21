@@ -39,7 +39,7 @@ guidata(hObject, handles);
 
 finalHandles = handles; % Return handles
 
-function handles = generate_spectrogram(handles, hObject, contourPoint)
+function generate_spectrogram(handles, hObject, contourPoint)
 % Function to actually generate the spectrogram
 
 channel = get(handles.channel_val,'String');
@@ -135,9 +135,9 @@ else
     outpoint = b - inpoint;
     handles.mapbounds = [inpoint outpoint];
 end
-handles.timescale = [min_time, max_time];
+handles.timescale = [min_time max_time];
 vibrancy = get(handles.vibrancy_slider, 'Value');
-handles.FONTSIZE = 12;
+FONTSIZE = 12;
 
 vibrancy = 20^(vibrancy-1);
 handles.vibrancy = vibrancy;
@@ -148,7 +148,6 @@ end
 
 % Choose default command line output for analyzecontours
 handles.output = hObject;
-handles = draw_spectrogram(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -163,13 +162,12 @@ else % Generate regular spectrogram
     imagesc(handles.timescale,handles.freqrange, log(abs(handles.sonogram)+handles.vibrancy));
 end
 set(gca,'YDir','normal');
-xlabel('time [ms]', 'FontSize', handles.FONTSIZE);
-ylabel('frequency [kHz]', 'FontSize', handles.FONTSIZE);
+xlabel('time [ms]', 'FontSize', FONTSIZE);
+ylabel('frequency [kHz]', 'FontSize', FONTSIZE);
 
 colormap('hot');
 
 function f = getfields(handles)
-% Get all available fields and store in a structured array 'f'
 f.times = handles.times;
 f.freqs = handles.freqs;
 f.songdata = handles.dat;
@@ -256,8 +254,7 @@ set(handles.status_bar, 'String', '');
 
 handles.current_syllable = 0;
 
-handles = generate_spectrogram(handles, hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
 
 % UIWAIT makes analyzecontours wait for user response (see UIRESUME)
 % uiwait(handles.maincanvas);
@@ -314,8 +311,8 @@ function graph_pushbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles = generate_spectrogram(handles, hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
+
 
 % --------------------------------------------------------------------
 function open_ClickedCallback(hObject, eventdata, handles)
@@ -343,8 +340,7 @@ handles.pathname = pathname;
 
 handles = loadFiles(handles,hObject);
 
-handles = generate_spectrogram(handles, hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
 
 % --- Executes during object creation, after setting all properties.
 function edit_nfft_CreateFcn(hObject, eventdata, handles)
@@ -440,7 +436,7 @@ function toggle_contour_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of toggle_contour
 
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
 
 % --- Executes during object creation, after setting all properties.
 function edit_vibrancy_CreateFcn(hObject, eventdata, handles)
@@ -498,8 +494,7 @@ else
         end
     end
 end
-handles = generate_spectrogram(handles, hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
 if drawpolynomial
     fit_poly_ClickedCallback(hObject, eventdata, handles, handles.degree);
 end
@@ -509,15 +504,24 @@ function next_syllable_Callback(hObject, eventdata, handles)
 % hObject    handle to next_syllable (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if handles.polynomialmode % Need to save this variable locally because it is set to false automatically later on
+    drawpolynomial = true;
+else
+    drawpolynomial = false;
+end
 if ~isfield(handles,'f')
     nextfile_Callback(hObject, eventdata, handles);
 elseif isfield(handles,'max_counter') && handles.current_syllable < handles.max_counter
     handles.current_syllable = handles.current_syllable + 1;
-    handles = generate_spectrogram(handles, hObject);
-    handles = draw_spectrogram(handles);
+    generate_spectrogram(handles, hObject);
 else
     nextfile_Callback(hObject, eventdata, handles);
 end
+if drawpolynomial
+    fit_poly_ClickedCallback(hObject, eventdata, handles, handles.degree);
+end
+
+ha
 
 
 % --- Executes on slider movement.
@@ -528,8 +532,7 @@ function vibrancy_slider_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-handles = generate_spectrogram(handles, hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -567,15 +570,26 @@ else
     set(handles.status_bar, 'String', 'Did not save data');
 end
 
+
+% --------------------------------------------------------------------
+function select_points_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to select_points (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[x, y] = ginput;
+
+points = [y,x];
+
+generate_spectrogram(handles, hObject, points);
+
+
 % --------------------------------------------------------------------
 function reload_ClickedCallback(hObject, eventdata, handles)
 % hObject    handle to reload (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles = generate_spectrogram(handles, hObject, 0);
-
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject, 0);
 
 
 % --- Executes on button press in prevfile.
@@ -590,8 +604,7 @@ if handles.current_file > 1
     if length(handles.current_syllable) > 0
         handles.current_syllable = 1;
     end
-    handles = generate_spectrogram(handles, hObject);
-    handles = draw_spectrogram(handles);
+    generate_spectrogram(handles, hObject);
 end
 
 
@@ -607,9 +620,8 @@ if handles.current_file < length(handles.all_files)
     if length(handles.current_syllable) > 0
         handles.current_syllable = 1;
     end
-    handles = generate_spectrogram(handles, hObject);
+    generate_spectrogram(handles, hObject);
 end
-handles = draw_spectrogram(handles);
 
 % --- Executes on selection change in files_menu.
 function files_menu_Callback(hObject, eventdata, handles)
@@ -626,8 +638,7 @@ handles = loadFiles(handles,hObject);
 if length(handles.current_syllable) > 0
     handles.current_syllable = 1;
 end
-handles = generate_spectrogram(handles,hObject);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles,hObject);
 
 % --- Executes during object creation, after setting all properties.
 function files_menu_CreateFcn(hObject, eventdata, handles)
@@ -648,8 +659,7 @@ function syllable_bars_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of syllable_bars
-handles = generate_spectrogram(handles, hObject, 0);
-handles = draw_spectrogram(handles);
+generate_spectrogram(handles, hObject, 0);
 
 % --- Executes on button press in save_and_next.
 function save_and_next_Callback(hObject, eventdata, handles)
