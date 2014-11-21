@@ -39,10 +39,8 @@ function [rawsong,Fs]=evsoundin(pathname,soundfile,filetype)
 % FS: The sampling rate if available from the file specified in SOUNDFILE.
 %     If the sampling rate is not available, then Fs = -1 is returned
 
-%soundfile_full = fullfile(pathname,soundfile);
-
-%HACK
-soundfile_full = soundfile;
+% CHANGED FOR CONTOURS PROJECT
+soundfile_full = fullfile(pathname,soundfile);
 
 ppos = findstr(soundfile,'.ebin');
 if (length(ppos)>0)

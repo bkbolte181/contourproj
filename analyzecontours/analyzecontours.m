@@ -19,10 +19,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function my_array = str2array(my_string)
-my_array = strsplit(my_string, {', ',',',' '});
-my_array = str2double(my_array);
-
 function finalHandles = loadFiles(handles, hObject)
 handles.filename = handles.all_files(handles.current_file).name;
 f = fullfile(handles.pathname, strcat(handles.filename, '.not.mat')); % Path to song metadata
@@ -275,7 +271,6 @@ while length(handles.all_files) < 1
         disp('No valid files found');
     end
 end
-cd(pathname)
 handles.current_file = 1;
 handles.pathname = pathname;
 
@@ -370,7 +365,6 @@ while pathname ~= 0 % Ends if you click "cancel"
         disp('No valid files found');
     end
 end
-cd(pathname)
 handles.current_file = 1;
 handles.pathname = pathname;
 
