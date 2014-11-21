@@ -46,6 +46,7 @@ channel = get(handles.channel_val,'String');
 
 % Load the sound using an external method
 [dat, fs] = load_sound(handles.pathname, handles.filename,channel);
+handles.dat = dat;
 
 buffer = 30; % Buffer before and after syllable - change this if desired, must be integer
 handles.buffer = buffer;
@@ -141,10 +142,6 @@ handles.FONTSIZE = 12;
 
 vibrancy = 20^(vibrancy-1);
 handles.vibrancy = vibrancy;
-
-if isfield(handles,'dat') && isequal(dat,handles.dat) && isequal(handles.min_freq, min_freq) && isequal(handles.max_freq, max_freq)
-    v = axis;
-end
 
 % Choose default command line output for analyzecontours
 handles.output = hObject;
@@ -701,4 +698,19 @@ function mainaxes_CreateFcn(hObject, eventdata, handles)
 % Nothing here
 
 function maincanvas_WindowButtonDownFcn(hObject, eventdata, handles)
+% Nothing here
+
+function edit_syllable_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_overlap_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_nfft_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_arthreshold_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_minfreq_Callback(hObject, eventdata, handles)
 % Nothing here

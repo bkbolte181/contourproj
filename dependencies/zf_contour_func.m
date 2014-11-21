@@ -88,6 +88,9 @@ Nangle = length(angles);
 
 global sonogramfinal
 
+% Squaring the input signal might make fundamental frequencies more robust
+s = s .* s;
+
 %% Bulk of algorithm
 
 for sigmacount=1:NtScale
