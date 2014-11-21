@@ -10,37 +10,43 @@ my_pt = contour(k,:);
 temp = contour;
 
 % Initialize the array that will be returned
-pts_in_order = [];
+pts_in_order = zeros(size(contour));
 
 % Keep track of the distance from point to point
-distances = [];
+distances = zeros(size(contour(:,1)));
+
+i = 0;
 
 % Do this until we've hit every point
 while ~isempty(temp)
     % Find closest point
     [k,d] = dsearchn(temp,my_pt);
-
-    if numel(distances) > 10 && d > mean(distances) + 3 * std(distances)
+    
+    dist_no_zeros = distances(distances~=0);
+    
+    if numel(dist_no_zeros) > 10 && d > mean(dist_no_zeros) + 3 * std(dist_no_zeros)
         % If the distance to this point exceeds a certain threshold,
         % end the loop
         break;
     end
+    
+    i = i + 1;
 
     % Store the location of that point
     my_pt = temp(k,:);
 
     % Store the distance of that point
-    distances = [distances; d];
+    distances(i) = d;
 
     % Add it to the next spot in our returned array
-    pts_in_order = [pts_in_order; my_pt];
+    pts_in_order(i,:) = my_pt;
 
     % Delete that point
     temp(k,:) = [];
 end
 
-% Return our new, ordered array
-pts_in_order;
+% Remove empty points
+pts_in_order(~any(pts_in_order,2),:) = [];
 
 end
 
