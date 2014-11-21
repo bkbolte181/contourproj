@@ -1,4 +1,4 @@
-function [contour] = simple_contours(sgram, pt, varargin)
+function [contour] = simple_contours(sgram, pt, vargin)
 % SIMPLE_CONTOURS Find the contour with less effort.
 % Parameters:
 %   sgram: Spectrogram with contours you want to find
@@ -25,9 +25,8 @@ if nargin >= 2
     contour = collect_points_to_contour(contour, pt);
 end
 
-if nargin > 2 && passed('plot', varargin)
-    figure; imagesc(abs(sgram));
-    hold on; plot(contour(1:end,1), contour(1:end,2),'k-')
-end
+if passed
+figure; imagesc(abs(sgram));
+hold on; plot(contour(1:end,1), contour(1:end,2),'k-')
 
 end
