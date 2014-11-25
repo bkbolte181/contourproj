@@ -160,11 +160,14 @@ function handles = draw_spectrogram(handles)
 %DRAW_SPECTROGRAM Method for actually drawing the spectrogram
 
 % Draws the contour image
-if get(handles.toggle_contour, 'Value'); % Generate contours
-    imagesc(handles.timescale,handles.freqrange,log(handles.contourmap+handles.vibrancy));
-else % Generate regular spectrogram
-    imagesc(handles.timescale,handles.freqrange, log(abs(handles.sonogram)+handles.vibrancy));
-end
+axes(handles.contouraxes)
+imagesc(handles.timescale,handles.freqrange,log(handles.contourmap+handles.vibrancy));
+set(gca,'YDir','normal');
+xlabel('time [ms]', 'FontSize', handles.FONTSIZE);
+ylabel('frequency [kHz]', 'FontSize', handles.FONTSIZE);
+
+axes(handles.mainaxes)
+imagesc(handles.timescale,handles.freqrange, log(abs(handles.sonogram)+handles.vibrancy));
 set(gca,'YDir','normal');
 xlabel('time [ms]', 'FontSize', handles.FONTSIZE);
 ylabel('frequency [kHz]', 'FontSize', handles.FONTSIZE);
@@ -730,4 +733,10 @@ function edit_arthreshold_Callback(hObject, eventdata, handles)
 % Nothing here
 
 function edit_minfreq_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_maxfreq_Callback(hObject, eventdata, handles)
+% Nothing here
+
+function edit_angles_Callback(hObject, eventdata, handles)
 % Nothing here
