@@ -19,7 +19,7 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function finalHandles = loadFiles(handles, hObject)
+function handles = load_files(handles, hObject)
 % Load a particular file, updating the handles structure
 
 handles.filename = handles.all_files(handles.current_file).name;
@@ -36,8 +36,6 @@ set(handles.files_menu,'String',files_list);
 set(handles.files_menu,'Value',handles.current_file);
 
 guidata(hObject, handles);
-
-finalHandles = handles; % Return handles
 
 function handles = generate_spectrogram(handles, hObject, contourPoint)
 % Function to actually generate the spectrogram
@@ -66,11 +64,19 @@ end
 
 % Load data from the specified file
 if ~isfield(handles,'f');
+    % If the file field is empty, set the current syllable to zero
     handles.current_syllable = 0;
 elseif handles.current_syllable > 0
+    % This is the bit of code that handles the edit_syllable input
     syllable = get(handles.edit_syllable, 'String');
+    
+    % Count the number of syllables
     counter = 0;
+    
+    % Loop through each syllable in the .cbin file
     for i=(1:numel(handles.f.onsets))
+        % If the syllable's label is one of the labels specified by the
+        % user, increment counter
         if sum(strfind(syllable,handles.f.labels(i)))
             counter = counter + 1;
             if counter == handles.current_syllable
@@ -247,7 +253,7 @@ if ~isfield(handles,'degree')
     handles.degree = 3; % Default value for polynomial degree
 end
 
-handles = loadFiles(handles,hObject);
+handles = load_files(handles,hObject);
 
 set(handles.status_bar, 'String', '');
 
@@ -338,7 +344,7 @@ end
 handles.current_file = 1;
 handles.pathname = pathname;
 
-handles = loadFiles(handles,hObject);
+handles = load_files(handles,hObject);
 
 handles = generate_spectrogram(handles, hObject);
 handles = draw_spectrogram(handles);
@@ -479,7 +485,7 @@ if handles.current_syllable > 1
 else
     if handles.current_file > 1
         handles.current_file = handles.current_file - 1;
-        handles = loadFiles(handles,hObject);
+        handles = load_files(handles,hObject);
         if isfield(handles,'f')
             if length(handles.current_syllable) > 1
                 handles.current_syllable = 1;
@@ -513,7 +519,10 @@ elseif isfield(handles,'max_counter') && handles.current_syllable < handles.max_
     handles = generate_spectrogram(handles, hObject);
     handles = draw_spectrogram(handles);
 else
-    nextfile_Callback(hObject, eventdata, handles);
+    % ALTERATION
+    % This is currently set to scroll backwards - change to
+    % nextfile_Callback to scroll forwards
+    prevfile_Callback(hObject, eventdata, handles);
 end
 
 
@@ -583,7 +592,7 @@ function prevfile_Callback(hObject, eventdata, handles)
 
 if handles.current_file > 1
     handles.current_file = handles.current_file - 1;
-    handles = loadFiles(handles,hObject);
+    handles = load_files(handles,hObject);
     if length(handles.current_syllable) > 0
         handles.current_syllable = 1;
     end
@@ -600,7 +609,7 @@ function nextfile_Callback(hObject, eventdata, handles)
 
 if handles.current_file < length(handles.all_files)
     handles.current_file = handles.current_file + 1;
-    handles = loadFiles(handles,hObject);
+    handles = load_files(handles,hObject);
     if length(handles.current_syllable) > 0
         handles.current_syllable = 1;
     end
@@ -619,7 +628,7 @@ function files_menu_Callback(hObject, eventdata, handles)
 val = get(hObject,'Value');
 str = get(hObject,'String');
 handles.current_file = val;
-handles = loadFiles(handles,hObject);
+handles = load_files(handles,hObject);
 if length(handles.current_syllable) > 0
     handles.current_syllable = 1;
 end
@@ -654,32 +663,40 @@ function save_and_next_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Save and continue button
+
 % Save data
 if ~isfield(handles,'save_path')
+    % If no current save destination, prompt user for new save destination
     handles.save_path = uigetdir;
 end
-if handles.polynomialmode % Need to save this variable locally because it is set to false automatically later on
-    drawpolynomial = true;
-else
-    drawpolynomial = false;
-end
+
+% Get the file's name from the handles structure
 filename = handles.filename;
+
+% Remove the '.cbin' part from the end of the file's name
 if strcmp(filename(end-3:end),'cbin')
     filename = filename(1:end-5);
 end
+
+% Basically get all needed fields from the handles structure
 f = getfields(handles);
+
+% Draw polynomial with the given file
 [p S] = img_to_cart(f, handles.degree);
 f.polynomial = p;
 f.polynomialinfo = S;
+
+% Make a new file name with the old one and save it
 filename = strcat(filename,'.',num2str(int32(f.in)),'.DATA','.mat');
 save(fullfile(handles.save_path,filename),'-struct','f');
+
+% Update the status bar with the relevant information
 [path name ext] = fileparts(handles.save_path);
 set(handles.status_bar, 'String', strcat({'Saved data to '}, name));
+
 % Move to next image
 next_syllable_Callback(hObject, eventdata, handles);
-if drawpolynomial
-    fit_poly_ClickedCallback(hObject, eventdata, handles, handles.degree);
-end
 
 % --- Executes during object creation, after setting all properties.
 function channel_val_CreateFcn(hObject, eventdata, handles)

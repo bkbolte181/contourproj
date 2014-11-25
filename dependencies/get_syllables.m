@@ -57,6 +57,8 @@ if ~exist(matfilename, 'file')
 end
 matfile = load(fullfile(directory, matfilename));
 
+song.labels = matfile.labels;
+
 syllables = cell(1,length(matfile.labels));
 for i=1:length(matfile.labels)
     % Get onset and offset in terms of samples, given milliseconds
