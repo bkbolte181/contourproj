@@ -524,8 +524,8 @@ elseif isfield(handles,'max_counter') && handles.current_syllable < handles.max_
 else
     % ALTERATION
     % This is currently set to scroll backwards - change to
-    % nextfile_Callback to scroll forwards
-    prevfile_Callback(hObject, eventdata, handles);
+    nextfile_Callback(hObject, eventdata, handles);
+    % prevfile_Callback(hObject, eventdata, handles);
 end
 
 

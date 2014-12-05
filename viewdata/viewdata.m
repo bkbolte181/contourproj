@@ -47,7 +47,7 @@ function makeplot(handles, hObject)
 
 % 0 = Don't display all catch contours
 % 1 = Display all catch contours
-displayCatch = 1;
+displayCatch = 0;
 
 % 0 = Don't display sonogram
 % 1 = Display sonogram
@@ -56,6 +56,10 @@ displaySonogram = 0;
 % 0 = Don't display contourmap
 % 1 = Display contourmap
 displayContourmap = 0;
+
+% 0 = Don't display syllable bars
+% 1 = Display syllable bars
+displaySyllableBars = 0;
 
 handles.data = handles.data(~cellfun('isempty',handles.data));
 handles.latencies = handles.latencies(handles.latencies~=0);
@@ -97,8 +101,8 @@ hold on;
 plot([data.stimonset data.stimonset], [min(data.stim) max(data.stim)], 'k');
 hold off;
 
-disp(['Stim onset ', 'Intersection'])
-disp([data.stimonset, data.intersections]);
+% disp(['Stim onset ', 'Intersection'])
+% disp([data.stimonset, data.intersections]);
 
 xlabel('time [ms]');
 ylabel('frequency [kHz]');

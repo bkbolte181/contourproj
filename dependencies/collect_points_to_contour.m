@@ -1,6 +1,5 @@
 function [pts_in_order] = collect_points_to_contour(contour, pt)
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+%COLLECT_POINTS_TO_CONTOUR Find the contour near a particular point
     
 % Point nearest "pt"
 k = dsearchn(contour,pt);
