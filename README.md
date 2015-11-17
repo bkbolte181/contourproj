@@ -1,4 +1,4 @@
 contourproj
 ===========
 
-Finally decided to use version control for this
+Some MATLAB scripts for detecting contours in images, primarily spectrograms.
